@@ -6,9 +6,10 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 const client = generateClient<Schema>();
 
 function App() {
-  const { signOut } = useAuthenticator();
+  // agora também trazemos o user
+  const { user, signOut } = useAuthenticator();
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
+  
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
@@ -19,14 +20,14 @@ function App() {
     client.models.Todo.create({ content: window.prompt("Todo content") });
   }
 
-    
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id })
   }
   
   return (
     <main>
-      <h1>My todos</h1>
+      {/* renderiza o loginId do utilizador autenticado */}
+      <h1>{user?.signInDetails?.loginId}'s todos</h1>
       <button onClick={createTodo}>+ new</button>
       <ul>
         {todos.map(todo => <li
